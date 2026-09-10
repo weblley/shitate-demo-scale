@@ -1,0 +1,284 @@
+/*
+ * shitate demo scale — launcher button + modal.
+ *
+ * Sized in rem/px on purpose: the modal must stay stable while the page's
+ * --st-* scale is being changed underneath it. Colors follow the theme
+ * palette through --st-color-* with plain fallbacks.
+ */
+.sds-fab {
+	position: fixed;
+	inset-inline-end: 1.25rem;
+	inset-block-end: 1.25rem;
+	z-index: 9000;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 3.25rem;
+	height: 3.25rem;
+	padding: 0;
+	border: 0;
+	border-radius: 999px;
+	background: var(--st-color-brand, #2952cc);
+	color: var(--st-color-base, #fff);
+	font: 700 1.05rem/1 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Hiragino Sans", "Noto Sans JP", sans-serif;
+	letter-spacing: -0.02em;
+	box-shadow: 0 2px 8px rgba(21, 24, 30, 0.14), 0 12px 32px rgba(21, 24, 30, 0.14);
+	cursor: pointer;
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sds-fab:hover,
+.sds-fab:focus-visible {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(21, 24, 30, 0.18), 0 16px 40px rgba(21, 24, 30, 0.18);
+	outline: 2px solid var(--st-color-brand, #2952cc);
+	outline-offset: 3px;
+}
+.sds-fab.is-active::after {
+	content: "";
+	position: absolute;
+	inset-inline-end: 0.15rem;
+	inset-block-start: 0.15rem;
+	width: 0.7rem;
+	height: 0.7rem;
+	border-radius: 999px;
+	background: var(--st-color-accent, #0fae8e);
+	border: 2px solid var(--st-color-base, #fff);
+}
+
+/* The <dialog> lives in the top layer; keep it off-center (right side) so the
+ * page stays visible while values change. The page can still be scrolled. */
+.sds-dialog {
+	box-sizing: border-box;
+	width: min(23rem, calc(100vw - 2rem));
+	max-height: min(92vh, 100%);
+	margin-block: auto;
+	margin-inline: auto 1rem;
+	padding: 0;
+	border: 1px solid var(--st-color-border, #e4e9f7);
+	border-radius: 0.75rem;
+	background: var(--st-color-base, #fff);
+	color: var(--st-color-contrast, #171f33);
+	font: 400 0.9rem/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Hiragino Sans", "Noto Sans JP", sans-serif;
+	box-shadow: 0 2px 8px rgba(21, 24, 30, 0.08), 0 24px 64px rgba(21, 24, 30, 0.18);
+	overflow: auto;
+}
+.sds-dialog::backdrop {
+	background: rgba(21, 24, 30, 0.12);
+}
+.sds-dialog *,
+.sds-dialog *::before,
+.sds-dialog *::after {
+	box-sizing: border-box;
+}
+.sds-dialog__inner {
+	padding: 1.25rem 1.25rem 1rem;
+}
+.sds-dialog__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	margin-block-end: 0.5rem;
+}
+.sds-dialog__title {
+	margin: 0;
+	font-size: 1.05rem;
+	font-weight: 700;
+	line-height: 1.3;
+}
+.sds-dialog__close {
+	flex: none;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: 0;
+	border-radius: 999px;
+	background: transparent;
+	color: var(--st-color-contrast-2, #515766);
+	font-size: 1.4rem;
+	line-height: 1;
+	cursor: pointer;
+}
+.sds-dialog__close:hover,
+.sds-dialog__close:focus-visible {
+	background: var(--st-color-base-2, #f4f6fc);
+	color: var(--st-color-contrast, #171f33);
+}
+.sds-dialog__lead {
+	margin: 0 0 1rem;
+	font-size: 0.8rem;
+	color: var(--st-color-contrast-2, #515766);
+}
+
+.sds-field {
+	margin-block-end: 1rem;
+}
+.sds-field__label {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-block-end: 0.35rem;
+	font-weight: 600;
+}
+.sds-field__value {
+	font-variant-numeric: tabular-nums;
+	font-weight: 500;
+	color: var(--st-color-brand, #2952cc);
+}
+.sds-field__help {
+	margin: 0.35rem 0 0;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	color: var(--st-color-contrast-2, #515766);
+}
+.sds-field__select {
+	width: 100%;
+	padding: 0.5rem 0.65rem;
+	border: 1px solid var(--st-color-border, #e4e9f7);
+	border-radius: 0.375rem;
+	background: var(--st-color-base, #fff);
+	color: inherit;
+	font: inherit;
+}
+.sds-field__range {
+	width: 100%;
+	accent-color: var(--st-color-brand, #2952cc);
+}
+
+/* Switch */
+.sds-switch {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	cursor: pointer;
+	font-weight: 600;
+}
+.sds-switch input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+.sds-switch__track {
+	position: relative;
+	flex: none;
+	width: 2.4rem;
+	height: 1.35rem;
+	border-radius: 999px;
+	background: var(--st-color-border, #e4e9f7);
+	transition: background 0.15s ease;
+}
+.sds-switch__track::after {
+	content: "";
+	position: absolute;
+	inset-block-start: 0.15rem;
+	inset-inline-start: 0.15rem;
+	width: 1.05rem;
+	height: 1.05rem;
+	border-radius: 999px;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+	transition: transform 0.15s ease;
+}
+.sds-switch input:checked + .sds-switch__track {
+	background: var(--st-color-brand, #2952cc);
+}
+.sds-switch input:checked + .sds-switch__track::after {
+	transform: translateX(1.05rem);
+}
+.sds-switch input:focus-visible + .sds-switch__track {
+	outline: 2px solid var(--st-color-brand, #2952cc);
+	outline-offset: 2px;
+}
+
+/* Result table */
+.sds-steps {
+	width: 100%;
+	margin: 0 0 1rem;
+	border-collapse: collapse;
+	font-size: 0.8rem;
+}
+.sds-steps__caption {
+	padding: 0 0 0.35rem;
+	text-align: start;
+	font-weight: 600;
+	color: var(--st-color-contrast-2, #515766);
+}
+.sds-steps__row {
+	border-block-start: 1px solid var(--st-color-border, #e4e9f7);
+}
+.sds-steps__row:last-child {
+	border-block-end: 1px solid var(--st-color-border, #e4e9f7);
+}
+.sds-steps th,
+.sds-steps td {
+	padding: 0.3rem 0;
+	vertical-align: middle;
+}
+.sds-steps__name {
+	width: 46%;
+	text-align: start;
+	font-weight: 500;
+}
+.sds-steps__sample {
+	height: 2.6rem;
+	text-align: center;
+	line-height: 1;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.sds-steps__aa {
+	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-weight: 700;
+	line-height: 1;
+}
+.sds-steps__px {
+	width: 22%;
+	text-align: end;
+	font-variant-numeric: tabular-nums;
+	color: var(--st-color-brand, #2952cc);
+}
+
+.sds-dialog__footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+}
+.sds-btn {
+	padding: 0.55rem 1rem;
+	border: 1px solid var(--st-color-brand, #2952cc);
+	border-radius: 0.375rem;
+	background: var(--st-color-brand, #2952cc);
+	color: var(--st-color-base, #fff);
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+}
+.sds-btn:hover,
+.sds-btn:focus-visible {
+	background: var(--st-color-brand-hover, #20409f);
+	border-color: var(--st-color-brand-hover, #20409f);
+}
+.sds-btn--ghost {
+	background: transparent;
+	color: var(--st-color-brand, #2952cc);
+}
+.sds-btn--ghost:hover,
+.sds-btn--ghost:focus-visible {
+	background: var(--st-color-base-2, #f4f6fc);
+	color: var(--st-color-brand, #2952cc);
+}
+
+/* Off-screen probes used to read the computed size of each step. */
+.sds-probe {
+	position: absolute;
+	inset-inline-start: -9999px;
+	inset-block-start: 0;
+	visibility: hidden;
+	pointer-events: none;
+}

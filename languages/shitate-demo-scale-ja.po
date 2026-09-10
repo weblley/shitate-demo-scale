@@ -1,0 +1,97 @@
+# Japanese translation for shitate demo scale.
+msgid ""
+msgstr ""
+"Project-Id-Version: shitate demo scale 0.1.0\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Domain: shitate-demo-scale\n"
+
+msgid "Minor Second — 1.067"
+msgstr "短2度 — 1.067"
+
+msgid "Major Second — 1.125"
+msgstr "長2度 — 1.125"
+
+msgid "Minor Third — 1.2"
+msgstr "短3度 — 1.2"
+
+msgid "Major Third — 1.25"
+msgstr "長3度 — 1.25"
+
+msgid "Perfect Fourth — 1.333"
+msgstr "完全4度 — 1.333"
+
+msgid "Augmented Fourth — 1.414"
+msgstr "増4度 — 1.414"
+
+msgid "Perfect Fifth — 1.5"
+msgstr "完全5度 — 1.5"
+
+msgid "Golden Ratio — 1.618"
+msgstr "黄金比 — 1.618"
+
+msgid "Display / H1"
+msgstr "Display / H1"
+
+msgid "Huge / H2"
+msgstr "Huge / H2"
+
+msgid "Extra Large / H3"
+msgstr "Extra Large / H3"
+
+msgid "Large / H4"
+msgstr "Large / H4"
+
+msgid "Medium / Body"
+msgstr "Medium / 本文"
+
+msgid "Small / H6"
+msgstr "Small / H6"
+
+msgid "X-Small"
+msgstr "X-Small"
+
+msgid "XX-Small"
+msgstr "XX-Small"
+
+msgid "Try the type scale"
+msgstr "タイプスケールを試す"
+
+msgid "Typography Scale"
+msgstr "タイポグラフィスケール"
+
+msgid "Close"
+msgstr "閉じる"
+
+msgid "Changes apply to this page instantly and are remembered in your browser only. Nothing is saved on the site."
+msgstr "変更はこのページに即時反映され、あなたのブラウザ内にだけ記憶されます。サイト側には何も保存されません。"
+
+msgid "Scale ratio"
+msgstr "スケール比率"
+
+msgid "Bigger ratio = more contrast between headings (like typescale.com)."
+msgstr "比率が大きいほど見出し間のコントラストが強くなります（typescale.com と同じ考え方）。"
+
+msgid "Base size"
+msgstr "基準サイズ"
+
+msgid "Body text size. The whole scale is built from this."
+msgstr "本文の文字サイズ。スケール全体はここから計算されます。"
+
+msgid "Apply rounding to font sizes"
+msgstr "フォントサイズにラウンドを適用"
+
+msgid "Snaps every step to even pixels (2px) and makes headings fluid between a derived mobile ratio and the chosen ratio."
+msgstr "各段を偶数ピクセル（2px）にスナップし、見出しをモバイル用の派生比率と選択した比率の間で流体的に変化させます。"
+
+msgid "Resulting sizes at this viewport"
+msgstr "この画面幅での実サイズ"
+
+msgid "Reset to theme settings"
+msgstr "テーマの設定に戻す"
+
+msgid "Done"
+msgstr "完了"
