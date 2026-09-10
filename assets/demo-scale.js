@@ -183,7 +183,8 @@
 			if ( isNaN( n ) ) {
 				return '–';
 			}
-			return ( Math.round( n * 100 ) / 100 ).toString().replace( /\.?0+$/, '' ) + 'px';
+			// Number → string already drops trailing zeros (30 → "30", 25.89 → "25.89").
+			return String( Math.round( n * 100 ) / 100 ) + 'px';
 		}
 
 		function refreshTable() {
