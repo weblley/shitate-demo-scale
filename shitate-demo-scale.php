@@ -81,7 +81,7 @@ function sds_ratio_choices() {
 /**
  * The theme's currently saved Typography Scale values (what "Reset" returns to).
  *
- * @return array{ratio:string,base:int,round:bool}
+ * @return array{ratio:string,base:int,round:bool,fixedSmall:bool}
  */
 function sds_theme_defaults() {
 	$ratio = (string) get_theme_mod( 'shitate_ratio', '1.25' );
@@ -96,6 +96,7 @@ function sds_theme_defaults() {
 		'ratio' => $ratio,
 		'base'  => $base,
 		'round' => (bool) get_theme_mod( 'shitate_round_scale', true ),
+		'fixedSmall' => (bool) get_theme_mod( 'shitate_fixed_small_text', false ),
 	);
 }
 
@@ -197,6 +198,15 @@ function sds_render_modal() {
 					<span class="sds-switch__text"><?php esc_html_e( 'Apply rounding to font sizes', 'shitate-demo-scale' ); ?></span>
 				</label>
 				<p class="sds-field__help"><?php esc_html_e( 'Snaps every step to even pixels (2px) and makes headings fluid between a derived mobile ratio and the chosen ratio.', 'shitate-demo-scale' ); ?></p>
+			</div>
+
+			<div class="sds-field">
+				<label class="sds-switch">
+					<input type="checkbox" data-sds-fixed-small<?php checked( $defaults['fixedSmall'] ); ?>>
+					<span class="sds-switch__track" aria-hidden="true"></span>
+					<span class="sds-switch__text"><?php esc_html_e( 'Fixed sizes for small text', 'shitate-demo-scale' ); ?></span>
+				</label>
+				<p class="sds-field__help"><?php esc_html_e( 'Sets Small / X-Small / XX-Small to 0.95rem / 0.8rem / 0.75rem instead of dividing by the ratio, which can make them too small to read.', 'shitate-demo-scale' ); ?></p>
 			</div>
 
 			<table class="sds-steps" aria-live="polite">

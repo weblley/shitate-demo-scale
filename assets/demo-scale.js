@@ -17,13 +17,20 @@
 	var RATIOS = cfg.ratios || [ '1.067', '1.125', '1.2', '1.25', '1.333', '1.414', '1.5', '1.618' ];
 	var BASE_MIN = cfg.baseMin || 12;
 	var BASE_MAX = cfg.baseMax || 24;
-	var DEFAULTS = cfg.defaults || { ratio: '1.25', base: 16, round: true };
+	var DEFAULTS = cfg.defaults || { ratio: '1.25', base: 16, round: true, fixedSmall: false };
 	var STEPS = [ 'xxxl', 'xxl', 'xl', 'l', 'm', 's', 'xs', 'xxs' ];
 
 	// Rounded / fluid mode — mirrors the theme's Customizer "round" branch.
-	var ROUND_CSS =
-		':root{' +
-		'--st-ratio-min:calc((1 + var(--st-ratio)) / 2);' +
+	var ROUND_HEAD = '--st-ratio-min:calc((1 + var(--st-ratio)) / 2);';
+	// Down-scale (only when small text is not pinned): divided by the ratio, snapped to 2px.
+	var ROUND_SMALL =
+		'--st-s-raw:calc(var(--st-text-m) / var(--st-ratio));' +
+		'--st-xs-raw:calc(var(--st-s-raw) / var(--st-ratio));' +
+		'--st-xxs-raw:calc(var(--st-xs-raw) / var(--st-ratio));' +
+		'--st-text-s:round(nearest, var(--st-s-raw), 2px);' +
+		'--st-text-xs:round(nearest, var(--st-xs-raw), 2px);' +
+		'--st-text-xxs:round(nearest, var(--st-xxs-raw), 2px);';
+	var ROUND_UP =
 		'--st-l-max:calc(var(--st-text-m) * var(--st-ratio));' +
 		'--st-xl-max:calc(var(--st-l-max) * var(--st-ratio));' +
 		'--st-xxl-max:calc(var(--st-xl-max) * var(--st-ratio));' +
@@ -35,17 +42,22 @@
 		'--st-text-l:round(nearest, clamp(var(--st-l-min), calc(var(--st-l-min) + 0.3vw), var(--st-l-max)), 2px);' +
 		'--st-text-xl:round(nearest, clamp(var(--st-xl-min), calc(var(--st-xl-min) + 0.7vw), var(--st-xl-max)), 2px);' +
 		'--st-text-xxl:round(nearest, clamp(var(--st-xxl-min), calc(var(--st-xxl-min) + 1.1vw), var(--st-xxl-max)), 2px);' +
-		'--st-text-xxxl:round(nearest, clamp(var(--st-xxxl-min), calc(var(--st-xxxl-min) + 1.6vw), var(--st-xxxl-max)), 2px);' +
-		'}';
+		'--st-text-xxxl:round(nearest, clamp(var(--st-xxxl-min), calc(var(--st-xxxl-min) + 1.6vw), var(--st-xxxl-max)), 2px);';
 
 	// Raw modular chain — what tokens.css declares when rounding is off.
 	var RAW_CSS =
 		':root{' +
+		'--st-text-s:calc(var(--st-text-m) / var(--st-ratio));' +
+		'--st-text-xs:calc(var(--st-text-s) / var(--st-ratio));' +
+		'--st-text-xxs:calc(var(--st-text-xs) / var(--st-ratio));' +
 		'--st-text-l:calc(var(--st-text-m) * var(--st-ratio));' +
 		'--st-text-xl:calc(var(--st-text-l) * var(--st-ratio));' +
 		'--st-text-xxl:calc(var(--st-text-xl) * var(--st-ratio));' +
 		'--st-text-xxxl:calc(var(--st-text-xxl) * var(--st-ratio));' +
 		'}';
+
+	// "Fixed sizes for small text" — emitted last so it wins over either chain.
+	var FIXED_SMALL_CSS = ':root{--st-text-s:0.95rem;--st-text-xs:0.8rem;--st-text-xxs:0.75rem;}';
 
 	/* ---------- state ---------- */
 
@@ -61,7 +73,7 @@
 		if ( isNaN( base ) || base < BASE_MIN || base > BASE_MAX ) {
 			base = DEFAULTS.base;
 		}
-		return { ratio: ratio, base: base, round: !! raw.round };
+		return { ratio: ratio, base: base, round: !! raw.round, fixedSmall: !! raw.fixedSmall };
 	}
 
 	function load() {
@@ -88,17 +100,24 @@
 		return (
 			state.ratio === String( DEFAULTS.ratio ) &&
 			state.base === parseInt( DEFAULTS.base, 10 ) &&
-			state.round === !! DEFAULTS.round
+			state.round === !! DEFAULTS.round &&
+			state.fixedSmall === !! DEFAULTS.fixedSmall
 		);
 	}
 
 	/* ---------- CSS override ---------- */
 
 	function buildCss( state ) {
-		return (
-			':root{--st-ratio:' + state.ratio + ';--st-text-m:' + state.base + 'px;}' +
-			( state.round ? ROUND_CSS : RAW_CSS )
-		);
+		var css = ':root{--st-ratio:' + state.ratio + ';--st-text-m:' + state.base + 'px;}';
+		if ( state.round ) {
+			css += ':root{' + ROUND_HEAD + ( state.fixedSmall ? '' : ROUND_SMALL ) + ROUND_UP + '}';
+		} else {
+			css += RAW_CSS;
+		}
+		if ( state.fixedSmall ) {
+			css += FIXED_SMALL_CSS;
+		}
+		return css;
 	}
 
 	function apply( state ) {
@@ -140,6 +159,7 @@
 		var baseEl = dialog.querySelector( '[data-sds-base]' );
 		var baseOut = dialog.querySelector( '[data-sds-base-out]' );
 		var roundEl = dialog.querySelector( '[data-sds-round]' );
+		var fixedSmallEl = dialog.querySelector( '[data-sds-fixed-small]' );
 		var resetBtn = dialog.querySelector( '[data-sds-reset]' );
 		var stepOuts = {};
 		var samples = {};
@@ -168,6 +188,7 @@
 				ratio: ratioEl.value,
 				base: baseEl.value,
 				round: roundEl.checked,
+				fixedSmall: fixedSmallEl.checked,
 			} );
 		}
 
@@ -176,6 +197,7 @@
 			baseEl.value = state.base;
 			baseOut.value = state.base + 'px';
 			roundEl.checked = state.round;
+			fixedSmallEl.checked = state.fixedSmall;
 		}
 
 		function formatPx( px ) {
@@ -223,6 +245,7 @@
 		ratioEl.addEventListener( 'change', onChange );
 		baseEl.addEventListener( 'input', onChange );
 		roundEl.addEventListener( 'change', onChange );
+		fixedSmallEl.addEventListener( 'change', onChange );
 
 		resetBtn.addEventListener( 'click', function () {
 			writeControls( sanitize( DEFAULTS ) );

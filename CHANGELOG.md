@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- "Fixed sizes for small text" switch, mirroring the theme's new Customizer option: when on, Small / X-Small / XX-Small are pinned to 0.95 / 0.8 / 0.75rem; when off they divide by the ratio (2px-snapped in rounding mode), exactly as the theme does.
+
 ## [0.1.0] - 2026-09-09
 
 ### Added

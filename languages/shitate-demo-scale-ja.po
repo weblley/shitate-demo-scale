@@ -95,3 +95,9 @@ msgstr "テーマの設定に戻す"
 
 msgid "Done"
 msgstr "完了"
+
+msgid "Fixed sizes for small text"
+msgstr "小さな文字の数値指定"
+
+msgid "Sets Small / X-Small / XX-Small to 0.95rem / 0.8rem / 0.75rem instead of dividing by the ratio, which can make them too small to read."
+msgstr "Small / X-Small / XX-Small を比率で割らず 0.95rem / 0.8rem / 0.75rem に固定します（比率で割ると小さすぎて読みにくくなる場合の対策）。"
