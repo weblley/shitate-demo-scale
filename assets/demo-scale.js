@@ -20,40 +20,32 @@
 	var DEFAULTS = cfg.defaults || { ratio: '1.25', base: 16, round: true, fixedSmall: false };
 	var STEPS = [ 'xxxl', 'xxl', 'xl', 'l', 'm', 's', 'xs', 'xxs' ];
 
-	// Rounded / fluid mode — mirrors the theme's Customizer "round" branch.
-	var ROUND_HEAD = '--st-ratio-min:calc((1 + var(--st-ratio)) / 2);';
-	// Down-scale (only when small text is not pinned): divided by the ratio, snapped to 2px.
+	// Rounded mode — mirrors the theme's Customizer "round" branch. Since theme
+	// 0.4.3 fluidity lives in the ratio itself (tokens.css derives --st-r from
+	// --st-ratio / --st-ratio-min), so every step is simply the base times a
+	// power of --st-r, snapped to 2px.
+	var ROUND_HEAD = '';
+	// Down-scale (only when small text is not pinned).
 	var ROUND_SMALL =
-		'--st-s-raw:calc(var(--st-text-m) / var(--st-ratio));' +
-		'--st-xs-raw:calc(var(--st-s-raw) / var(--st-ratio));' +
-		'--st-xxs-raw:calc(var(--st-xs-raw) / var(--st-ratio));' +
-		'--st-text-s:round(nearest, var(--st-s-raw), 2px);' +
-		'--st-text-xs:round(nearest, var(--st-xs-raw), 2px);' +
-		'--st-text-xxs:round(nearest, var(--st-xxs-raw), 2px);';
+		'--st-text-s:round(nearest, calc(var(--st-text-m) / var(--st-r)), 2px);' +
+		'--st-text-xs:round(nearest, calc(var(--st-text-m) / var(--st-r) / var(--st-r)), 2px);' +
+		'--st-text-xxs:round(nearest, calc(var(--st-text-m) / var(--st-r) / var(--st-r) / var(--st-r)), 2px);';
 	var ROUND_UP =
-		'--st-l-max:calc(var(--st-text-m) * var(--st-ratio));' +
-		'--st-xl-max:calc(var(--st-l-max) * var(--st-ratio));' +
-		'--st-xxl-max:calc(var(--st-xl-max) * var(--st-ratio));' +
-		'--st-xxxl-max:calc(var(--st-xxl-max) * var(--st-ratio));' +
-		'--st-l-min:calc(var(--st-text-m) * var(--st-ratio-min));' +
-		'--st-xl-min:calc(var(--st-l-min) * var(--st-ratio-min));' +
-		'--st-xxl-min:calc(var(--st-xl-min) * var(--st-ratio-min));' +
-		'--st-xxxl-min:calc(var(--st-xxl-min) * var(--st-ratio-min));' +
-		'--st-text-l:round(nearest, clamp(var(--st-l-min), calc(var(--st-l-min) + 0.3vw), var(--st-l-max)), 2px);' +
-		'--st-text-xl:round(nearest, clamp(var(--st-xl-min), calc(var(--st-xl-min) + 0.7vw), var(--st-xl-max)), 2px);' +
-		'--st-text-xxl:round(nearest, clamp(var(--st-xxl-min), calc(var(--st-xxl-min) + 1.1vw), var(--st-xxl-max)), 2px);' +
-		'--st-text-xxxl:round(nearest, clamp(var(--st-xxxl-min), calc(var(--st-xxxl-min) + 1.6vw), var(--st-xxxl-max)), 2px);';
+		'--st-text-l:round(nearest, calc(var(--st-text-m) * var(--st-r)), 2px);' +
+		'--st-text-xl:round(nearest, calc(var(--st-text-m) * var(--st-r) * var(--st-r)), 2px);' +
+		'--st-text-xxl:round(nearest, calc(var(--st-text-m) * var(--st-r) * var(--st-r) * var(--st-r)), 2px);' +
+		'--st-text-xxxl:round(nearest, calc(var(--st-text-m) * var(--st-r) * var(--st-r) * var(--st-r) * var(--st-r)), 2px);';
 
 	// Raw modular chain — what tokens.css declares when rounding is off.
 	var RAW_CSS =
 		':root{' +
-		'--st-text-s:calc(var(--st-text-m) / var(--st-ratio));' +
-		'--st-text-xs:calc(var(--st-text-s) / var(--st-ratio));' +
-		'--st-text-xxs:calc(var(--st-text-xs) / var(--st-ratio));' +
-		'--st-text-l:calc(var(--st-text-m) * var(--st-ratio));' +
-		'--st-text-xl:calc(var(--st-text-l) * var(--st-ratio));' +
-		'--st-text-xxl:calc(var(--st-text-xl) * var(--st-ratio));' +
-		'--st-text-xxxl:calc(var(--st-text-xxl) * var(--st-ratio));' +
+		'--st-text-s:calc(var(--st-text-m) / var(--st-r));' +
+		'--st-text-xs:calc(var(--st-text-m) / var(--st-r) / var(--st-r));' +
+		'--st-text-xxs:calc(var(--st-text-m) / var(--st-r) / var(--st-r) / var(--st-r));' +
+		'--st-text-l:calc(var(--st-text-m) * var(--st-r));' +
+		'--st-text-xl:calc(var(--st-text-m) * var(--st-r) * var(--st-r));' +
+		'--st-text-xxl:calc(var(--st-text-m) * var(--st-r) * var(--st-r) * var(--st-r));' +
+		'--st-text-xxxl:calc(var(--st-text-m) * var(--st-r) * var(--st-r) * var(--st-r) * var(--st-r));' +
 		'}';
 
 	// "Fixed sizes for small text" — emitted last so it wins over either chain.
