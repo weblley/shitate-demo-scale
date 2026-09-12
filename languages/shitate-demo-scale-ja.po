@@ -101,3 +101,27 @@ msgstr "小さな文字の数値指定"
 
 msgid "Sets Small / X-Small / XX-Small to 0.95rem / 0.8rem / 0.75rem instead of dividing by the ratio, which can make them too small to read."
 msgstr "Small / X-Small / XX-Small を比率で割らず 0.95rem / 0.8rem / 0.75rem に固定します（比率で割ると小さすぎて読みにくくなる場合の対策）。"
+
+msgid "Display"
+msgstr "表示"
+
+msgid "Launcher button"
+msgstr "起動ボタン"
+
+msgid "The \"Aa\" button and the Typography Scale modal appear on the front end while the shitate theme is active."
+msgstr "「Aa」ボタンとタイポグラフィスケールのモーダルは、shitate テーマが有効な間フロントエンドに表示されます。"
+
+msgid "Show the button only to logged-in users"
+msgstr "ログイン時のみボタンを表示する"
+
+msgid "Unchecked: every visitor can open the modal (demo-site behaviour). Checked: only logged-in users see the button — handy while a site is public but not yet meant as a demo."
+msgstr "オフ: すべての訪問者がモーダルを開けます（デモサイト向け）。オン: ログイン中のユーザーにだけボタンを表示します（公開中だがまだデモとして見せたくないサイトに便利）。"
+
+msgid "shitate demo scale"
+msgstr "shitate demo scale"
+
+msgid "The shitate theme is not active, so the button is currently hidden regardless of this setting."
+msgstr "shitate テーマが有効でないため、この設定に関わらずボタンは現在表示されません。"
+
+msgid "Settings"
+msgstr "設定"

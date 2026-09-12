@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [0.1.0] - 2026-09-12
 
 ### Added
+- Settings → shitate demo scale: "Show the button only to logged-in users" (default off = every visitor). "Settings" link on the Plugins row; option removed on uninstall.
 - "Fixed sizes for small text" switch, mirroring the theme's Customizer option: when on, Small / X-Small / XX-Small are pinned to 0.95 / 0.8 / 0.75rem; when off they divide by the ratio (2px-snapped in rounding mode), exactly as the theme does.
 - Floating "Aa" launcher and a `<dialog>` modal that lets any visitor (logged in or not) change the shitate theme's Typography Scale: ratio (8 musical intervals), base size (12–24px) and "Apply rounding to font sizes".
 - Live table of the resulting pixel size for every step (Display → XX-Small) at the current viewport, with an "Aa" sample per step.

@@ -16,7 +16,7 @@ echo "→ Staging files…"
 rm -rf "$STAGE" "$DIST/$SLUG.zip"
 mkdir -p "$STAGE"
 
-for item in shitate-demo-scale.php includes assets languages README.md CHANGELOG.md; do
+for item in shitate-demo-scale.php uninstall.php includes assets languages README.md CHANGELOG.md; do
 	if [ -e "$item" ]; then
 		cp -R "$item" "$STAGE/"
 	fi

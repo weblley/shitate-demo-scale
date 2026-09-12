@@ -32,6 +32,7 @@ define( 'SDS_GITHUB_REPO', 'weblley/shitate-demo-scale' );
 define( 'SDS_GITHUB_ASSET', 'shitate-demo-scale.zip' );
 
 require_once SDS_DIR . 'includes/github-updater.php';
+require_once SDS_DIR . 'includes/settings.php';
 
 /**
  * Load translations shipped with the plugin.
@@ -46,7 +47,8 @@ add_action( 'init', 'sds_load_textdomain', 1 );
  *
  * Front end only, and only while the shitate theme (or a child of it) is
  * active — the modal drives the theme's --st-* tokens and is meaningless
- * elsewhere. Use the `sds_enabled` filter to switch it off (e.g. per host).
+ * elsewhere. Settings → shitate demo scale can limit it to logged-in users;
+ * the `sds_enabled` filter switches it off entirely (e.g. per host).
  *
  * @return bool
  */
@@ -55,6 +57,10 @@ function sds_is_enabled() {
 		return false;
 	}
 	if ( 'shitate' !== get_template() ) {
+		return false;
+	}
+	$settings = sds_get_settings();
+	if ( $settings['logged_in_only'] && ! is_user_logged_in() ) {
 		return false;
 	}
 	return (bool) apply_filters( 'sds_enabled', true );
