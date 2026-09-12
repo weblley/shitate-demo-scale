@@ -84,8 +84,8 @@ msgstr "本文の文字サイズ。スケール全体はここから計算され
 msgid "Apply rounding to font sizes"
 msgstr "フォントサイズにラウンドを適用"
 
-msgid "Snaps every step to even pixels (2px) and makes headings fluid between a derived mobile ratio and the chosen ratio."
-msgstr "各段を偶数ピクセル（2px）にスナップし、見出しをモバイル用の派生比率と選択した比率の間で流体的に変化させます。"
+msgid "Snaps every text step to even pixels (2px)."
+msgstr "すべての文字段を偶数ピクセル（2px）にスナップします。"
 
 msgid "Resulting sizes at this viewport"
 msgstr "この画面幅での実サイズ"
@@ -125,3 +125,27 @@ msgstr "shitate テーマが有効でないため、この設定に関わらず�
 
 msgid "Settings"
 msgstr "設定"
+
+msgid "Auto — halfway between 1 and the main ratio"
+msgstr "自動（1 とメイン比率の中間）"
+
+msgid "Scale ratio on small screens"
+msgstr "小さな画面での比率"
+
+msgid "The ratio used at 375px wide. The scale eases from this to the main ratio by 1260px, so type and spacing tighten on phones without media queries."
+msgstr "画面幅 375px で使う比率。1260px までにメイン比率へなめらかに変化し、メディアクエリなしでスマホでは文字も余白も引き締まります。"
+
+msgid "You are logged in with theme-editing rights: you can write these values into the theme's Customizer settings for every visitor."
+msgstr "テーマ編集権限でログイン中です。この値をテーマのカスタマイザー設定に書き込み、すべての訪問者に適用できます。"
+
+msgid "Save to theme settings"
+msgstr "テーマの設定として保存"
+
+msgid "Saving…"
+msgstr "保存中…"
+
+msgid "Saved. Every visitor now gets this scale (the button turns back to the neutral state)."
+msgstr "保存しました。以後すべての訪問者にこのスケールが適用されます（ボタンの変更マークは消えます）。"
+
+msgid "Could not save. Reload the page and try again."
+msgstr "保存できませんでした。ページを再読み込みしてもう一度お試しください。"

@@ -15,16 +15,17 @@
 	var STORAGE_KEY = 'shitate-demo-scale';
 	var STYLE_ID = 'sds-override';
 	var RATIOS = cfg.ratios || [ '1.067', '1.125', '1.2', '1.25', '1.333', '1.414', '1.5', '1.618' ];
+	var RATIOS_MOBILE = cfg.ratiosMobile || [ 'auto' ].concat( RATIOS );
+	var I18N = window.sdsI18n || {};
 	var BASE_MIN = cfg.baseMin || 12;
 	var BASE_MAX = cfg.baseMax || 24;
-	var DEFAULTS = cfg.defaults || { ratio: '1.25', base: 16, round: true, fixedSmall: false };
+	var DEFAULTS = cfg.defaults || { ratio: '1.25', ratioMobile: 'auto', base: 16, round: true, fixedSmall: false };
 	var STEPS = [ 'xxxl', 'xxl', 'xl', 'l', 'm', 's', 'xs', 'xxs' ];
 
 	// Rounded mode — mirrors the theme's Customizer "round" branch. Since theme
 	// 0.4.3 fluidity lives in the ratio itself (tokens.css derives --st-r from
 	// --st-ratio / --st-ratio-min), so every step is simply the base times a
 	// power of --st-r, snapped to 2px.
-	var ROUND_HEAD = '';
 	// Down-scale (only when small text is not pinned).
 	var ROUND_SMALL =
 		'--st-text-s:round(nearest, calc(var(--st-text-m) / var(--st-r)), 2px);' +
@@ -51,6 +52,10 @@
 	// "Fixed sizes for small text" — emitted last so it wins over either chain.
 	var FIXED_SMALL_CSS = ':root{--st-text-s:0.95rem;--st-text-xs:0.8rem;--st-text-xxs:0.75rem;}';
 
+	// Small-screen ratio "auto" = the tokens.css default; restated because the
+	// theme's inline CSS may have pinned --st-ratio-min to a fixed value.
+	var RATIO_MIN_AUTO = '--st-ratio-min:calc((1 + var(--st-ratio, 1.25)) / 2);';
+
 	/* ---------- state ---------- */
 
 	function sanitize( raw ) {
@@ -58,14 +63,18 @@
 			return null;
 		}
 		var ratio = String( raw.ratio );
+		var ratioMobile = String( raw.ratioMobile || 'auto' );
 		var base = parseInt( raw.base, 10 );
 		if ( RATIOS.indexOf( ratio ) === -1 ) {
 			ratio = DEFAULTS.ratio;
 		}
+		if ( RATIOS_MOBILE.indexOf( ratioMobile ) === -1 ) {
+			ratioMobile = DEFAULTS.ratioMobile || 'auto';
+		}
 		if ( isNaN( base ) || base < BASE_MIN || base > BASE_MAX ) {
 			base = DEFAULTS.base;
 		}
-		return { ratio: ratio, base: base, round: !! raw.round, fixedSmall: !! raw.fixedSmall };
+		return { ratio: ratio, ratioMobile: ratioMobile, base: base, round: !! raw.round, fixedSmall: !! raw.fixedSmall };
 	}
 
 	function load() {
@@ -91,6 +100,7 @@
 	function isDefault( state ) {
 		return (
 			state.ratio === String( DEFAULTS.ratio ) &&
+			state.ratioMobile === String( DEFAULTS.ratioMobile || 'auto' ) &&
 			state.base === parseInt( DEFAULTS.base, 10 ) &&
 			state.round === !! DEFAULTS.round &&
 			state.fixedSmall === !! DEFAULTS.fixedSmall
@@ -100,9 +110,12 @@
 	/* ---------- CSS override ---------- */
 
 	function buildCss( state ) {
-		var css = ':root{--st-ratio:' + state.ratio + ';--st-text-m:' + state.base + 'px;}';
+		var css =
+			':root{--st-ratio:' + state.ratio + ';--st-text-m:' + state.base + 'px;' +
+			( state.ratioMobile === 'auto' ? RATIO_MIN_AUTO : '--st-ratio-min:' + state.ratioMobile + ';' ) +
+			'}';
 		if ( state.round ) {
-			css += ':root{' + ROUND_HEAD + ( state.fixedSmall ? '' : ROUND_SMALL ) + ROUND_UP + '}';
+			css += ':root{' + ( state.fixedSmall ? '' : ROUND_SMALL ) + ROUND_UP + '}';
 		} else {
 			css += RAW_CSS;
 		}
@@ -148,6 +161,7 @@
 		}
 
 		var ratioEl = dialog.querySelector( '[data-sds-ratio]' );
+		var ratioMobileEl = dialog.querySelector( '[data-sds-ratio-mobile]' );
 		var baseEl = dialog.querySelector( '[data-sds-base]' );
 		var baseOut = dialog.querySelector( '[data-sds-base-out]' );
 		var roundEl = dialog.querySelector( '[data-sds-round]' );
@@ -178,6 +192,7 @@
 		function readState() {
 			return sanitize( {
 				ratio: ratioEl.value,
+				ratioMobile: ratioMobileEl.value,
 				base: baseEl.value,
 				round: roundEl.checked,
 				fixedSmall: fixedSmallEl.checked,
@@ -186,6 +201,7 @@
 
 		function writeControls( state ) {
 			ratioEl.value = state.ratio;
+			ratioMobileEl.value = state.ratioMobile;
 			baseEl.value = state.base;
 			baseOut.value = state.base + 'px';
 			roundEl.checked = state.round;
@@ -235,6 +251,7 @@
 		}
 
 		ratioEl.addEventListener( 'change', onChange );
+		ratioMobileEl.addEventListener( 'change', onChange );
 		baseEl.addEventListener( 'input', onChange );
 		roundEl.addEventListener( 'change', onChange );
 		fixedSmallEl.addEventListener( 'change', onChange );
@@ -243,6 +260,49 @@
 			writeControls( sanitize( DEFAULTS ) );
 			onChange();
 		} );
+
+		// "Save to theme settings" (logged-in users with edit_theme_options).
+		var saveBtn = dialog.querySelector( '[data-sds-save]' );
+		var saveStatus = dialog.querySelector( '[data-sds-save-status]' );
+		if ( saveBtn && cfg.canSave && cfg.saveUrl && window.fetch ) {
+			saveBtn.addEventListener( 'click', function () {
+				var state = readState();
+				saveBtn.disabled = true;
+				saveStatus.textContent = I18N.saving || '…';
+				window
+					.fetch( cfg.saveUrl, {
+						method: 'POST',
+						credentials: 'same-origin',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-WP-Nonce': cfg.nonce,
+						},
+						body: JSON.stringify( state ),
+					} )
+					.then( function ( res ) {
+						if ( ! res.ok ) {
+							throw new Error( res.status );
+						}
+						return res.json();
+					} )
+					.then( function ( data ) {
+						// The theme now serves these values, so the browser override
+						// is no longer a deviation: forget it. The injected CSS stays
+						// until the next page load, where the theme takes over.
+						DEFAULTS = sanitize( data.defaults || state );
+						clear();
+						current = null;
+						markFab( false );
+						saveStatus.textContent = I18N.saved || 'OK';
+					} )
+					.catch( function () {
+						saveStatus.textContent = I18N.failed || 'Error';
+					} )
+					.then( function () {
+						saveBtn.disabled = false;
+					} );
+			} );
+		}
 
 		function open() {
 			if ( typeof dialog.showModal === 'function' ) {

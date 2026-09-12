@@ -282,3 +282,40 @@
 	visibility: hidden;
 	pointer-events: none;
 }
+
+/* Save to theme (logged-in users with theme-editing rights) */
+.sds-save {
+	margin: 0 0 1rem;
+	padding: 0.75rem 0.85rem;
+	border: 1px dashed var(--st-color-accent, #0fae8e);
+	border-radius: 0.5rem;
+	background: color-mix(in srgb, var(--st-color-accent, #0fae8e) 6%, var(--st-color-base, #fff));
+}
+.sds-save__note {
+	margin: 0 0 0.6rem;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	color: var(--st-color-contrast-2, #515766);
+}
+.sds-save__status {
+	margin: 0.5rem 0 0;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	color: var(--st-color-contrast-2, #515766);
+}
+.sds-save__status:empty {
+	display: none;
+}
+.sds-btn--accent {
+	background: var(--st-color-accent, #0fae8e);
+	border-color: var(--st-color-accent, #0fae8e);
+}
+.sds-btn--accent:hover,
+.sds-btn--accent:focus-visible {
+	background: color-mix(in srgb, var(--st-color-accent, #0fae8e) 80%, #000);
+	border-color: color-mix(in srgb, var(--st-color-accent, #0fae8e) 80%, #000);
+}
+.sds-btn:disabled {
+	opacity: 0.6;
+	cursor: default;
+}

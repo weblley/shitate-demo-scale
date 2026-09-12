@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- "Scale ratio on small screens" select (Auto / the same 8 ratios), mirroring the theme's `shitate_ratio_mobile` setting: the low end of the fluid ratio at 375px.
+- "Save to theme settings": logged-in users with `edit_theme_options` get a button that writes the modal's values into the theme's Customizer settings (`POST sds/v1/theme-scale`, nonce + capability checked). Visitors without that right never see it.
+
+### Changed
+- Override CSS follows theme 0.4.3: every step is the base times a power of the fluid ratio `--st-r`; "Apply rounding" now only snaps to 2px. Verified identical to the theme's output for all 8 ratio-mobile × rounding × fixed-small combinations.
+
 ## [0.1.0] - 2026-09-12
 
 ### Added

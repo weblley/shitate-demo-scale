@@ -85,24 +85,105 @@ function sds_ratio_choices() {
 }
 
 /**
- * The theme's currently saved Typography Scale values (what "Reset" returns to).
+ * Small-screen ratio choices — "auto" plus the same list.
  *
- * @return array{ratio:string,base:int,round:bool,fixedSmall:bool}
+ * @return array<string,string> value => label
  */
-function sds_theme_defaults() {
-	$ratio = (string) get_theme_mod( 'shitate_ratio', '1.25' );
+function sds_ratio_mobile_choices() {
+	return array( 'auto' => __( 'Auto — halfway between 1 and the main ratio', 'shitate-demo-scale' ) ) + sds_ratio_choices();
+}
+
+/**
+ * Sanitize a full scale state (ratio / ratioMobile / base / round / fixedSmall).
+ *
+ * @param array $raw Untrusted values.
+ * @return array{ratio:string,ratioMobile:string,base:int,round:bool,fixedSmall:bool}
+ */
+function sds_sanitize_state( $raw ) {
+	$raw   = is_array( $raw ) ? $raw : array();
+	$ratio = isset( $raw['ratio'] ) ? (string) $raw['ratio'] : '1.25';
 	if ( ! array_key_exists( $ratio, sds_ratio_choices() ) ) {
 		$ratio = '1.25';
 	}
-	$base = absint( get_theme_mod( 'shitate_text_m', 16 ) );
+	$mobile = isset( $raw['ratioMobile'] ) ? (string) $raw['ratioMobile'] : 'auto';
+	if ( ! array_key_exists( $mobile, sds_ratio_mobile_choices() ) ) {
+		$mobile = 'auto';
+	}
+	$base = isset( $raw['base'] ) ? absint( $raw['base'] ) : 16;
 	if ( $base < 12 || $base > 24 ) {
 		$base = 16;
 	}
 	return array(
-		'ratio' => $ratio,
-		'base'  => $base,
-		'round' => (bool) get_theme_mod( 'shitate_round_scale', true ),
-		'fixedSmall' => (bool) get_theme_mod( 'shitate_fixed_small_text', false ),
+		'ratio'       => $ratio,
+		'ratioMobile' => $mobile,
+		'base'        => $base,
+		'round'       => ! empty( $raw['round'] ),
+		'fixedSmall'  => ! empty( $raw['fixedSmall'] ),
+	);
+}
+
+/**
+ * The theme's currently saved Typography Scale values (what "Reset" returns to).
+ *
+ * @return array{ratio:string,ratioMobile:string,base:int,round:bool,fixedSmall:bool}
+ */
+function sds_theme_defaults() {
+	return sds_sanitize_state(
+		array(
+			'ratio'       => get_theme_mod( 'shitate_ratio', '1.25' ),
+			'ratioMobile' => get_theme_mod( 'shitate_ratio_mobile', 'auto' ),
+			'base'        => get_theme_mod( 'shitate_text_m', 16 ),
+			'round'       => get_theme_mod( 'shitate_round_scale', true ),
+			'fixedSmall'  => get_theme_mod( 'shitate_fixed_small_text', false ),
+		)
+	);
+}
+
+/**
+ * Whether the current user may write the modal's values into the theme's
+ * Customizer settings (the "Save to theme" button).
+ *
+ * @return bool
+ */
+function sds_user_can_save() {
+	return is_user_logged_in() && current_user_can( 'edit_theme_options' );
+}
+
+/**
+ * REST: save the scale into the theme mods. Logged-in users with
+ * edit_theme_options only; nonce checked by the REST API (X-WP-Nonce).
+ */
+function sds_register_rest_routes() {
+	register_rest_route(
+		'sds/v1',
+		'/theme-scale',
+		array(
+			'methods'             => 'POST',
+			'permission_callback' => 'sds_user_can_save',
+			'callback'            => 'sds_rest_save_theme_scale',
+		)
+	);
+}
+add_action( 'rest_api_init', 'sds_register_rest_routes' );
+
+/**
+ * REST callback: persist the submitted state as Customizer values.
+ *
+ * @param WP_REST_Request $request Request.
+ * @return WP_REST_Response
+ */
+function sds_rest_save_theme_scale( $request ) {
+	$state = sds_sanitize_state( $request->get_json_params() );
+	set_theme_mod( 'shitate_ratio', $state['ratio'] );
+	set_theme_mod( 'shitate_ratio_mobile', $state['ratioMobile'] );
+	set_theme_mod( 'shitate_text_m', $state['base'] );
+	set_theme_mod( 'shitate_round_scale', $state['round'] );
+	set_theme_mod( 'shitate_fixed_small_text', $state['fixedSmall'] );
+	return rest_ensure_response(
+		array(
+			'saved'    => true,
+			'defaults' => sds_theme_defaults(),
+		)
 	);
 }
 
@@ -135,10 +216,21 @@ function sds_enqueue_assets() {
 		'sds-demo-scale',
 		'window.sdsConfig = ' . wp_json_encode(
 			array(
-				'defaults' => sds_theme_defaults(),
-				'ratios'   => array_keys( sds_ratio_choices() ),
-				'baseMin'  => 12,
-				'baseMax'  => 24,
+				'defaults'     => sds_theme_defaults(),
+				'ratios'       => array_keys( sds_ratio_choices() ),
+				'ratiosMobile' => array_keys( sds_ratio_mobile_choices() ),
+				'baseMin'      => 12,
+				'baseMax'      => 24,
+				'canSave'      => sds_user_can_save(),
+				'saveUrl'      => sds_user_can_save() ? esc_url_raw( rest_url( 'sds/v1/theme-scale' ) ) : '',
+				'nonce'        => sds_user_can_save() ? wp_create_nonce( 'wp_rest' ) : '',
+			)
+		) . ';' .
+		'window.sdsI18n = ' . wp_json_encode(
+			array(
+				'saving' => __( 'Saving…', 'shitate-demo-scale' ),
+				'saved'  => __( 'Saved. Every visitor now gets this scale (the button turns back to the neutral state).', 'shitate-demo-scale' ),
+				'failed' => __( 'Could not save. Reload the page and try again.', 'shitate-demo-scale' ),
 			)
 		) . ';',
 		'before'
@@ -189,6 +281,16 @@ function sds_render_modal() {
 			</div>
 
 			<div class="sds-field">
+				<label class="sds-field__label" for="sds-ratio-mobile"><?php esc_html_e( 'Scale ratio on small screens', 'shitate-demo-scale' ); ?></label>
+				<select id="sds-ratio-mobile" class="sds-field__select" data-sds-ratio-mobile>
+					<?php foreach ( sds_ratio_mobile_choices() as $value => $label ) : ?>
+						<option value="<?php echo esc_attr( $value ); ?>"<?php selected( $defaults['ratioMobile'], $value ); ?>><?php echo esc_html( $label ); ?></option>
+					<?php endforeach; ?>
+				</select>
+				<p class="sds-field__help"><?php esc_html_e( 'The ratio used at 375px wide. The scale eases from this to the main ratio by 1260px, so type and spacing tighten on phones without media queries.', 'shitate-demo-scale' ); ?></p>
+			</div>
+
+			<div class="sds-field">
 				<label class="sds-field__label" for="sds-base">
 					<?php esc_html_e( 'Base size', 'shitate-demo-scale' ); ?>
 					<output class="sds-field__value" data-sds-base-out for="sds-base"><?php echo esc_html( $defaults['base'] ); ?>px</output>
@@ -203,7 +305,7 @@ function sds_render_modal() {
 					<span class="sds-switch__track" aria-hidden="true"></span>
 					<span class="sds-switch__text"><?php esc_html_e( 'Apply rounding to font sizes', 'shitate-demo-scale' ); ?></span>
 				</label>
-				<p class="sds-field__help"><?php esc_html_e( 'Snaps every step to even pixels (2px) and makes headings fluid between a derived mobile ratio and the chosen ratio.', 'shitate-demo-scale' ); ?></p>
+				<p class="sds-field__help"><?php esc_html_e( 'Snaps every text step to even pixels (2px).', 'shitate-demo-scale' ); ?></p>
 			</div>
 
 			<div class="sds-field">
@@ -227,6 +329,14 @@ function sds_render_modal() {
 					<?php endforeach; ?>
 				</tbody>
 			</table>
+
+			<?php if ( sds_user_can_save() ) : ?>
+				<div class="sds-save">
+					<p class="sds-save__note"><?php esc_html_e( 'You are logged in with theme-editing rights: you can write these values into the theme\'s Customizer settings for every visitor.', 'shitate-demo-scale' ); ?></p>
+					<button type="button" class="sds-btn sds-btn--accent" data-sds-save><?php esc_html_e( 'Save to theme settings', 'shitate-demo-scale' ); ?></button>
+					<p class="sds-save__status" data-sds-save-status role="status" aria-live="polite"></p>
+				</div>
+			<?php endif; ?>
 
 			<footer class="sds-dialog__footer">
 				<button type="button" class="sds-btn sds-btn--ghost" data-sds-reset><?php esc_html_e( 'Reset to theme settings', 'shitate-demo-scale' ); ?></button>
