@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-09-16
+
+### Added
+- `gtag('set', { site_name })` printed at wp_head priority 1, ahead of any gtag('config') — so when another plugin (Rank Math) loads GA4, its events including page_view carry the site name too. Needs no measurement ID; follows the editor-tracking switch; `sds_site_name_snippet_enabled` filter.
+
 ## [0.3.1] - 2026-09-15
 
 ### Fixed

@@ -81,6 +81,48 @@ function sds_analytics_enabled() {
 }
 
 /**
+ * Whether the early gtag('set', { site_name }) snippet should print.
+ *
+ * Unlike the loader this does not need a measurement ID: another plugin
+ * (Rank Math on the demo sites) may be the one loading gtag.js, and the
+ * point is to tag ITS events too. Front end only; the editor-tracking switch
+ * applies the same way as for the loader. `sds_site_name_snippet_enabled`
+ * filter to switch it off.
+ *
+ * @return bool
+ */
+function sds_site_name_snippet_enabled() {
+	if ( is_admin() || wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || is_customize_preview() ) {
+		return false;
+	}
+	$settings = sds_get_settings();
+	if ( empty( $settings['ga_track_admins'] ) && is_user_logged_in() && current_user_can( 'edit_posts' ) ) {
+		return false;
+	}
+	return (bool) apply_filters( 'sds_site_name_snippet_enabled', '' !== sds_site_name() );
+}
+
+/**
+ * Print gtag('set', { site_name }) at the very top of <head>.
+ *
+ * gtag('set') applies to every later gtag('config') on the page, so running
+ * it at wp_head priority 1 — before Rank Math's tag (and before this plugin's
+ * own loader, which prints with the head scripts) — puts site_name on every
+ * event, page_view included, whichever plugin loads gtag.js.
+ */
+function sds_print_site_name_snippet() {
+	if ( ! sds_site_name_snippet_enabled() ) {
+		return;
+	}
+	echo '<script id="sds-ga-site-name">'
+		. 'window.dataLayer = window.dataLayer || [];'
+		. 'function gtag(){dataLayer.push(arguments);}'
+		. 'gtag("set", ' . wp_json_encode( array( 'site_name' => sds_site_name() ) ) . ');'
+		. "</script>\n";
+}
+add_action( 'wp_head', 'sds_print_site_name_snippet', 1 );
+
+/**
  * Load gtag.js and configure it with the site name.
  */
 function sds_enqueue_analytics() {
