@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-09-15
+
+### Fixed
+- Works on shitate 0.4.0–0.4.2 too: the override now restates `--st-r` (fallback to `--st-ratio` when the theme has no fluid ratio), so text steps no longer collapse on themes older than 0.4.3.
+
 ## [0.2.0] - 2026-09-15
 
 ### Added

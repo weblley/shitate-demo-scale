@@ -56,6 +56,12 @@
 	// theme's inline CSS may have pinned --st-ratio-min to a fixed value.
 	var RATIO_MIN_AUTO = '--st-ratio-min:calc((1 + var(--st-ratio, 1.25)) / 2);';
 
+	// The working ratio every step is computed from. Theme 0.4.3+ defines
+	// --st-r as the fluid ratio (--st-ratio-fluid); older themes have neither,
+	// so restating it with a fallback to --st-ratio keeps the override valid
+	// there (static ratio instead of fluid). Identical on 0.4.3+.
+	var ST_R = '--st-r:var(--st-ratio-fluid, var(--st-ratio));';
+
 	/* ---------- state ---------- */
 
 	function sanitize( raw ) {
@@ -113,6 +119,7 @@
 		var css =
 			':root{--st-ratio:' + state.ratio + ';--st-text-m:' + state.base + 'px;' +
 			( state.ratioMobile === 'auto' ? RATIO_MIN_AUTO : '--st-ratio-min:' + state.ratioMobile + ';' ) +
+			ST_R +
 			'}';
 		if ( state.round ) {
 			css += ':root{' + ( state.fixedSmall ? '' : ROUND_SMALL ) + ROUND_UP + '}';
