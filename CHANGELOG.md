@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-15
+
 ### Added
 - "Scale ratio on small screens" select (Auto / the same 8 ratios), mirroring the theme's `shitate_ratio_mobile` setting: the low end of the fluid ratio at 375px.
 - "Save to theme settings": logged-in users with `edit_theme_options` get a button that writes the modal's values into the theme's Customizer settings (`POST sds/v1/theme-scale`, nonce + capability checked). Visitors without that right never see it.
