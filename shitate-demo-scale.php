@@ -33,6 +33,7 @@ define( 'SDS_GITHUB_ASSET', 'shitate-demo-scale.zip' );
 
 require_once SDS_DIR . 'includes/github-updater.php';
 require_once SDS_DIR . 'includes/settings.php';
+require_once SDS_DIR . 'includes/analytics.php';
 
 /**
  * Load translations shipped with the plugin.
@@ -224,6 +225,7 @@ function sds_enqueue_assets() {
 				'canSave'      => sds_user_can_save(),
 				'saveUrl'      => sds_user_can_save() ? esc_url_raw( rest_url( 'sds/v1/theme-scale' ) ) : '',
 				'nonce'        => sds_user_can_save() ? wp_create_nonce( 'wp_rest' ) : '',
+				'siteName'     => sds_site_name(),
 			)
 		) . ';' .
 		'window.sdsI18n = ' . wp_json_encode(

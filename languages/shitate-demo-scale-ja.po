@@ -149,3 +149,30 @@ msgstr "保存しました。以後すべての訪問者にこのスケールが
 
 msgid "Could not save. Reload the page and try again."
 msgstr "保存できませんでした。ページを再読み込みしてもう一度お試しください。"
+
+msgid "Analytics"
+msgstr "アナリティクス"
+
+msgid "GA4 measurement ID"
+msgstr "GA4 測定 ID"
+
+msgid "Site name"
+msgstr "サイト名"
+
+msgid "Logged-in users"
+msgstr "ログインユーザー"
+
+msgid "Send this site's traffic to the shared GA4 property. Every hit carries a site_name parameter; register it as an event-scoped custom dimension in GA4 to compare demo sites. The modal also sends demo_scale_open, demo_scale_change and demo_scale_save events."
+msgstr "このサイトのアクセスを共通の GA4 プロパティに送ります。すべての計測に site_name パラメータが付くので、GA4 でイベントスコープのカスタムディメンションとして登録するとデモサイト別に比較できます。モーダルからは demo_scale_open / demo_scale_change / demo_scale_save イベントも送信します。"
+
+msgid "Leave empty to send nothing."
+msgstr "空欄にすると何も送信しません。"
+
+msgid "Value of the site_name parameter. Empty = %s (from the site URL)."
+msgstr "site_name パラメータの値。空欄なら %s（サイト URL から自動）。"
+
+msgid "Also track logged-in users who can edit content"
+msgstr "コンテンツを編集できるログインユーザーも計測する"
+
+msgid "Unchecked: your own editing sessions are left out of the numbers."
+msgstr "チェックなし: 自分の編集作業は数字に含まれません。"

@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-15
+
+### Added
+- Google Analytics 4 (Settings → shitate demo scale → Analytics): measurement ID, `site_name` parameter (defaults to the install's path segment, e.g. `demo-pro1`), and a switch to include logged-in editors (off by default). Loads gtag.js with `anonymize_ip`, independent of the active theme. `sds_analytics_enabled` filter.
+- Modal events for GA4: `demo_scale_open`, `demo_scale_change` (ratio, ratio_mobile, base_size, rounding, fixed_small) and `demo_scale_save`, each with `site_name`.
+
 ## [0.2.1] - 2026-09-15
 
 ### Fixed

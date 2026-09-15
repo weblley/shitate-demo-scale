@@ -22,6 +22,22 @@
 	var DEFAULTS = cfg.defaults || { ratio: '1.25', ratioMobile: 'auto', base: 16, round: true, fixedSmall: false };
 	var STEPS = [ 'xxxl', 'xxl', 'xl', 'l', 'm', 's', 'xs', 'xxs' ];
 
+	// GA4 events (only when the site's analytics is loaded — see analytics.php).
+	function track( name, state ) {
+		if ( typeof window.gtag !== 'function' ) {
+			return;
+		}
+		var params = { site_name: cfg.siteName || '' };
+		if ( state ) {
+			params.ratio = state.ratio;
+			params.ratio_mobile = state.ratioMobile;
+			params.base_size = state.base;
+			params.rounding = state.round ? 'on' : 'off';
+			params.fixed_small = state.fixedSmall ? 'on' : 'off';
+		}
+		window.gtag( 'event', name, params );
+	}
+
 	// Rounded mode — mirrors the theme's Customizer "round" branch. Since theme
 	// 0.4.3 fluidity lives in the ratio itself (tokens.css derives --st-r from
 	// --st-ratio / --st-ratio-min), so every step is simply the base times a
@@ -263,6 +279,15 @@
 		roundEl.addEventListener( 'change', onChange );
 		fixedSmallEl.addEventListener( 'change', onChange );
 
+		// One event per settled change (the range fires 'input' continuously,
+		// so listen to 'change' here).
+		function trackChange() {
+			track( 'demo_scale_change', readState() );
+		}
+		[ ratioEl, ratioMobileEl, baseEl, roundEl, fixedSmallEl ].forEach( function ( el ) {
+			el.addEventListener( 'change', trackChange );
+		} );
+
 		resetBtn.addEventListener( 'click', function () {
 			writeControls( sanitize( DEFAULTS ) );
 			onChange();
@@ -293,6 +318,7 @@
 						return res.json();
 					} )
 					.then( function ( data ) {
+						track( 'demo_scale_save', state );
 						// The theme now serves these values, so the browser override
 						// is no longer a deviation: forget it. The injected CSS stays
 						// until the next page load, where the theme takes over.
@@ -318,6 +344,7 @@
 				dialog.setAttribute( 'open', '' );
 			}
 			refreshTable();
+			track( 'demo_scale_open', null );
 		}
 
 		fab.addEventListener( 'click', open );

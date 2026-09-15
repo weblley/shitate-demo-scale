@@ -4,6 +4,9 @@
  *
  * One option array (`sds_settings`) managed through the Settings API:
  *   logged_in_only (bool) — show the launcher only to logged-in users.
+ *   ga_id (string)        — GA4 measurement ID; empty = analytics off.
+ *   ga_site_name (string) — value of the site_name parameter (default: path).
+ *   ga_track_admins (bool) — also track logged-in editors.
  *
  * @package ShitateDemoScale
  */
@@ -19,7 +22,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function sds_default_settings() {
 	return array(
-		'logged_in_only' => false,
+		'logged_in_only'  => false,
+		'ga_id'           => '',
+		'ga_site_name'    => '',
+		'ga_track_admins' => false,
 	);
 }
 
@@ -42,7 +48,10 @@ function sds_get_settings() {
 function sds_sanitize_settings( $input ) {
 	$input = is_array( $input ) ? $input : array();
 	return array(
-		'logged_in_only' => ! empty( $input['logged_in_only'] ),
+		'logged_in_only'  => ! empty( $input['logged_in_only'] ),
+		'ga_id'           => sds_sanitize_ga_id( isset( $input['ga_id'] ) ? $input['ga_id'] : '' ),
+		'ga_site_name'    => isset( $input['ga_site_name'] ) ? sanitize_title( $input['ga_site_name'] ) : '',
+		'ga_track_admins' => ! empty( $input['ga_track_admins'] ),
 	);
 }
 
@@ -74,6 +83,85 @@ function sds_register_settings() {
 		'sds-settings',
 		'sds_section_display'
 	);
+
+	add_settings_section(
+		'sds_section_analytics',
+		__( 'Analytics', 'shitate-demo-scale' ),
+		'sds_section_analytics_text',
+		'sds-settings'
+	);
+	add_settings_field(
+		'sds_ga_id',
+		__( 'GA4 measurement ID', 'shitate-demo-scale' ),
+		'sds_field_ga_id',
+		'sds-settings',
+		'sds_section_analytics'
+	);
+	add_settings_field(
+		'sds_ga_site_name',
+		__( 'Site name', 'shitate-demo-scale' ),
+		'sds_field_ga_site_name',
+		'sds-settings',
+		'sds_section_analytics'
+	);
+	add_settings_field(
+		'sds_ga_track_admins',
+		__( 'Logged-in users', 'shitate-demo-scale' ),
+		'sds_field_ga_track_admins',
+		'sds-settings',
+		'sds_section_analytics'
+	);
+}
+
+/**
+ * Analytics section intro.
+ */
+function sds_section_analytics_text() {
+	echo '<p>' . esc_html__( 'Send this site\'s traffic to the shared GA4 property. Every hit carries a site_name parameter; register it as an event-scoped custom dimension in GA4 to compare demo sites. The modal also sends demo_scale_open, demo_scale_change and demo_scale_save events.', 'shitate-demo-scale' ) . '</p>';
+}
+
+/**
+ * Text: measurement ID.
+ */
+function sds_field_ga_id() {
+	$settings = sds_get_settings();
+	?>
+	<input type="text" id="sds_ga_id" name="sds_settings[ga_id]" value="<?php echo esc_attr( $settings['ga_id'] ); ?>" class="regular-text code" placeholder="G-XXXXXXXXXX" pattern="G-[A-Za-z0-9]{4,16}">
+	<p class="description"><?php esc_html_e( 'Leave empty to send nothing.', 'shitate-demo-scale' ); ?></p>
+	<?php
+}
+
+/**
+ * Text: site name.
+ */
+function sds_field_ga_site_name() {
+	$settings = sds_get_settings();
+	?>
+	<input type="text" id="sds_ga_site_name" name="sds_settings[ga_site_name]" value="<?php echo esc_attr( $settings['ga_site_name'] ); ?>" class="regular-text code" placeholder="<?php echo esc_attr( sds_default_site_name() ); ?>">
+	<p class="description">
+		<?php
+		printf(
+			/* translators: %s: default site name derived from the URL */
+			esc_html__( 'Value of the site_name parameter. Empty = %s (from the site URL).', 'shitate-demo-scale' ),
+			'<code>' . esc_html( sds_default_site_name() ) . '</code>'
+		);
+		?>
+	</p>
+	<?php
+}
+
+/**
+ * Checkbox: track admins.
+ */
+function sds_field_ga_track_admins() {
+	$settings = sds_get_settings();
+	?>
+	<label for="sds_ga_track_admins">
+		<input type="checkbox" id="sds_ga_track_admins" name="sds_settings[ga_track_admins]" value="1" <?php checked( $settings['ga_track_admins'] ); ?>>
+		<?php esc_html_e( 'Also track logged-in users who can edit content', 'shitate-demo-scale' ); ?>
+	</label>
+	<p class="description"><?php esc_html_e( 'Unchecked: your own editing sessions are left out of the numbers.', 'shitate-demo-scale' ); ?></p>
+	<?php
 }
 add_action( 'admin_init', 'sds_register_settings' );
 
