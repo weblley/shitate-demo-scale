@@ -111,7 +111,10 @@ function sds_enqueue_analytics() {
 				'site_name'    => sds_site_name(),
 			)
 		) . ');',
-		'after'
+		// "before": gtag() only queues into dataLayer, so the config can run
+		// ahead of the loader — and WordPress keeps the loader async (an
+		// "after" inline script would force it to load synchronously).
+		'before'
 	);
 }
 add_action( 'wp_enqueue_scripts', 'sds_enqueue_analytics', 1 );
