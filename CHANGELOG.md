@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-09-17
+
+### Changed
+- Requires at least 7.0 (was 6.6), the same floor as the shitate theme. Requires PHP stays 7.4; verified on PHP 8.5.
+
 ## [0.3.2] - 2026-09-16
 
 ### Added

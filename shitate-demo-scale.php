@@ -3,7 +3,7 @@
  * Plugin Name:       shitate demo scale
  * Description:       Demo-site only. Lets any visitor (logged in or not) try the shitate theme's Typography Scale — ratio, base size and rounding — from a modal. Changes live in the visitor's browser; nothing is saved on the site.
  * Version:           0.3.2
- * Requires at least: 6.6
+ * Requires at least: 7.0
  * Requires PHP:      7.4
  * Author:            weblley inc
  * Author URI:        https://weblley.co.jp/
