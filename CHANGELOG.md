@@ -5,8 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- 訪問者の選択の保存先を localStorage から **sessionStorage** に変更。タブを閉じれば消えるので、デモで触った設定が後日まで残らない（ログイン中の「テーマの設定として保存」は従来どおりサーバー側）
+
 ### Fixed
-- localStorage のキーをサイトのパスで分ける（`shitate-demo-scale:/demo-1/` など）。公式サイトとデモは同じオリジンなので、demo-1 で選んだ比率が公式サイトや他のデモにも適用されていた。旧キーの保存値は無視される（初期状態に戻る）
+- 保存キーをサイトのパスで分ける（`shitate-demo-scale:/demo-1/` など）。公式サイトとデモは同じオリジンなので、demo-1 で選んだ比率が公式サイトや他のデモにも適用されていた。旧キーの保存値は無視される（初期状態に戻る）
 
 ## [0.3.3] - 2026-09-17
 

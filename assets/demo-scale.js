@@ -5,7 +5,7 @@
  * visitor can try ratio / base size / rounding without logging in. The
  * override is a <style> appended to <head> (after the theme's own inline
  * scale CSS, so it wins on equal :root specificity) and is remembered in
- * localStorage for this browser only. Nothing is sent to the server.
+ * sessionStorage for this browser only. Nothing is sent to the server.
  *
  * Keep the two CSS blocks below in sync with the theme's functions.php
  * (shitate_scale_inline_css) and assets/css/tokens.css.
@@ -103,7 +103,7 @@
 
 	function load() {
 		try {
-			return sanitize( JSON.parse( window.localStorage.getItem( STORAGE_KEY ) ) );
+			return sanitize( JSON.parse( window.sessionStorage.getItem( STORAGE_KEY ) ) );
 		} catch ( e ) {
 			return null;
 		}
@@ -111,13 +111,13 @@
 
 	function save( state ) {
 		try {
-			window.localStorage.setItem( STORAGE_KEY, JSON.stringify( state ) );
+			window.sessionStorage.setItem( STORAGE_KEY, JSON.stringify( state ) );
 		} catch ( e ) {}
 	}
 
 	function clear() {
 		try {
-			window.localStorage.removeItem( STORAGE_KEY );
+			window.sessionStorage.removeItem( STORAGE_KEY );
 		} catch ( e ) {}
 	}
 
