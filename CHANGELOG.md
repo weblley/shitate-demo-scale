@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-10-16
+
 ### Changed
 - 訪問者の選択の保存先を localStorage から **sessionStorage** に変更。タブを閉じれば消えるので、デモで触った設定が後日まで残らない（ログイン中の「テーマの設定として保存」は従来どおりサーバー側）
 
