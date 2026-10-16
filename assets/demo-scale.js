@@ -12,7 +12,9 @@
  */
 ( function () {
 	var cfg = window.sdsConfig || {};
-	var STORAGE_KEY = 'shitate-demo-scale';
+	// Scoped by the site's path: the official site and the demo sites share one
+	// origin, so a plain key let a ratio picked on demo-1 leak into every other site.
+	var STORAGE_KEY = 'shitate-demo-scale:' + ( cfg.homePath || '/' );
 	var STYLE_ID = 'sds-override';
 	var RATIOS = cfg.ratios || [ '1.067', '1.125', '1.2', '1.25', '1.333', '1.414', '1.5', '1.618' ];
 	var RATIOS_MOBILE = cfg.ratiosMobile || [ 'auto' ].concat( RATIOS );

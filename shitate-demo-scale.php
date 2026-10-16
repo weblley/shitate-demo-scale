@@ -226,6 +226,7 @@ function sds_enqueue_assets() {
 				'saveUrl'      => sds_user_can_save() ? esc_url_raw( rest_url( 'sds/v1/theme-scale' ) ) : '',
 				'nonce'        => sds_user_can_save() ? wp_create_nonce( 'wp_rest' ) : '',
 				'siteName'     => sds_site_name(),
+				'homePath'     => (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH ),
 			)
 		) . ';' .
 		'window.sdsI18n = ' . wp_json_encode(

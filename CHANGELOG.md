@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+- localStorage のキーをサイトのパスで分ける（`shitate-demo-scale:/demo-1/` など）。公式サイトとデモは同じオリジンなので、demo-1 で選んだ比率が公式サイトや他のデモにも適用されていた。旧キーの保存値は無視される（初期状態に戻る）
+
 ## [0.3.3] - 2026-09-17
 
 ### Changed
